@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Matcher & Lead Tool &bull; Simple 1-Click Profiler{% endblock %}
+{% block page_title %}Customer Matcher & Lead Tool{% endblock %}
+{% block page_subtitle %}Type in any customer's visit and spending habits to instantly see their group and the best marketing offer{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Input Form Column -->
+    <div class="col-lg-6">
+        <div class="analytics-card">
+            <div class="card-header-clean d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title">Enter Customer Information</h5>
+                    <p class="card-subtitle text-muted">Fill in the 4 simple numbers below, or click any sample profile to test</p>
+                </div>
+            </div>
+
+            <!-- 1-Click Sample Buttons -->
+            <div class="mb-4 p-3 bg-light rounded-3 border">
+                <span class="d-block small text-muted fw-bold mb-2 text-uppercase">1-Click Test Samples:</span>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary preset-btn" data-visit="15" data-spend="2600" data-time="100" data-score="35" data-cat="Fashion" data-offer="No">
+                        <i class="bi bi-bag-check-fill me-1"></i> Sample 1: Regular Clothes Buyer
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-teal preset-btn" data-visit="6" data-spend="3800" data-time="55" data-score="40" data-cat="Food" data-offer="Yes">
+                        <i class="bi bi-cup-hot-fill me-1"></i> Sample 2: Big Spender on Dining
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-amber preset-btn" data-visit="7" data-spend="2200" data-time="140" data-score="75" data-cat="Entertainment" data-offer="Yes">
+                        <i class="bi bi-film me-1"></i> Sample 3: Movie & Hangout Visitor
+                    </button>
+                </div>
+            </div>
+
+            <form id="leadClassifierForm">
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-6">
+                        <label class="form-label fw-semibold small text-muted">How many times do they visit per month?</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="visitFreq" name="visit_frequency" value="12" min="1" max="30" step="1" required>
+                            <span class="input-group-text">visits/mo</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-semibold small text-muted">How much do they spend per month?</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="avgSpend" name="avg_spending" value="2800" min="100" max="10000" step="25" required>
+                            <span class="input-group-text">USD</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-6">
+                        <label class="form-label fw-semibold small text-muted">How long do they stay per visit?</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="timeSpent" name="time_spent" value="95" min="10" max="360" step="5" required>
+                            <span class="input-group-text">minutes</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-semibold small text-muted">Spending Score (1 to 100)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="spendingScore" name="spending_score" value="45" min="1" max="100" step="1" required>
+                            <span class="input-group-text">/ 100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <label class="form-label fw-semibold small text-muted">Favorite Thing to Buy</label>
+                        <select class="form-select" id="categoryPref" name="category">
+                            <option value="Fashion" selected>Fashion & Clothes</option>
+                            <option value="Food">Food & Restaurants</option>
+                            <option value="Entertainment">Movies & Games</option>
+                            <option value="Electronics">Electronics & Gadgets</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-semibold small text-muted">Do they use discount coupons?</label>
+                        <select class="form-select" id="offersUsed" name="offers_used">
+                            <option value="No">No (Buys at regular full price)</option>
+                            <option value="Yes">Yes (Uses coupons / discount deals)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm" id="classifyBtn">
+                    <i class="bi bi-stars me-1"></i> Match Customer & Get Marketing Plan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Prediction Results Column -->
+    <div class="col-lg-6">
+        <div class="analytics-card h-100 d-flex flex-column" id="resultsContainer">
+            <div class="card-header-clean">
+                <h5 class="card-title">Customer Match & Strategy Result</h5>
+                <p class="card-subtitle text-muted">Our AI instantly identifies the group and recommends the best offer</p>
+            </div>
+
+            <!-- Placeholder State (Before Execution) -->
+            <div id="resultPlaceholder" class="d-flex flex-column align-items-center justify-content-center flex-grow-1 text-center p-4">
+                <div class="avatar-lg bg-light text-muted rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                    <i class="bi bi-person-check fs-2"></i>
+                </div>
+                <h6 class="fw-bold text-dark">Ready to Check a Customer</h6>
+                <p class="text-muted small max-w-sm mb-3">Adjust the numbers on the left or click any of the 3 sample buttons above to see instant results.</p>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.querySelector('.preset-btn').click()">
+                    Test Sample Customer
+                </button>
+            </div>
+
+            <!-- Active Result State -->
+            <div id="resultActive" class="d-none flex-grow-1 d-flex flex-column">
+                <div class="p-3 rounded-3 mb-3" id="resultHeaderBox" style="background-color: rgba(79, 70, 229, 0.08); border-left: 5px solid #4f46e5;">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <span class="badge" id="resultBadge" style="background-color: #4f46e5; color: white;">VIP Regular</span>
+                        <span class="badge bg-dark" id="resultClusterLabel">Group 0</span>
+                    </div>
+                    <h4 class="fw-bold mb-1" id="resultPersonaTitle" style="color: #4f46e5;">Regular Fashion Shoppers</h4>
+                    <p class="text-muted small mb-0" id="resultTagline">Loyal shoppers who visit often and buy clothes at regular prices.</p>
+                </div>
+
+                <div class="p-2 border rounded bg-light mb-3">
+                    <span class="d-block text-muted small" style="font-size: 0.75rem;">Customer Priority Level</span>
+                    <strong class="text-dark small" id="resultLeadTier">High Priority: Keep Them Loyal (VIP)</strong>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="fw-bold small text-uppercase text-muted"><i class="bi bi-lightbulb-fill me-1 text-primary"></i> Best Marketing Plan</h6>
+                    <div class="p-3 bg-light rounded border text-muted small" id="resultStrategy">
+                        Do not give them big discounts—they already buy at full price! Instead, give them VIP early access to new collections and personal styling.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="fw-bold small text-uppercase text-muted"><i class="bi bi-tag-fill me-1 text-success"></i> Best Offer to Give Them</h6>
+                    <div class="p-3 rounded border small fw-semibold text-dark" id="resultPromoAction" style="background-color: #f8fafc;">
+                        VIP Early Access & Loyalty Points (No heavy price cuts).
+                    </div>
+                </div>
+
+                <div class="mt-auto p-3 bg-white border rounded-3 shadow-2xs">
+                    <span class="small fw-bold text-uppercase text-muted d-block mb-1"><i class="bi bi-chat-quote-fill text-indigo me-1"></i> What to Say to Them (Sales & Email Message)</span>
+                    <p class="small text-muted mb-0" id="resultScript">
+                        "As one of our most valued shoppers, we'd love to invite you to our private preview of the new seasonal collection before it opens to the public..."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Handle Quick Presets
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('visitFreq').value = btn.dataset.visit;
+            document.getElementById('avgSpend').value = btn.dataset.spend;
+            document.getElementById('timeSpent').value = btn.dataset.time;
+            document.getElementById('spendingScore').value = btn.dataset.score;
+            document.getElementById('categoryPref').value = btn.dataset.cat;
+            document.getElementById('offersUsed').value = btn.dataset.offer;
+            document.getElementById('classifyBtn').click();
+        });
+    });
+
+    // Handle AJAX Classification
+    document.getElementById('leadClassifierForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('classifyBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Matching customer...';
+
+        const payload = {
+            visit_frequency: document.getElementById('visitFreq').value,
+            avg_spending: document.getElementById('avgSpend').value,
+            time_spent: document.getElementById('timeSpent').value,
+            spending_score: document.getElementById('spendingScore').value,
+            category: document.getElementById('categoryPref').value,
+            offers_used: document.getElementById('offersUsed').value
+        };
+
+        try {
+            const res = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                document.getElementById('resultPlaceholder').classList.add('d-none');
+                const activeBox = document.getElementById('resultActive');
+                activeBox.classList.remove('d-none');
+
+                document.getElementById('resultBadge').innerText = data.badge;
+                document.getElementById('resultBadge').style.backgroundColor = data.color;
+                document.getElementById('resultClusterLabel').innerText = `Group ${data.cluster_id}`;
+                document.getElementById('resultPersonaTitle').innerText = data.persona_name;
+                document.getElementById('resultPersonaTitle').style.color = data.color;
+                document.getElementById('resultTagline').innerText = data.tagline;
+
+                const headerBox = document.getElementById('resultHeaderBox');
+                headerBox.style.borderLeftColor = data.color;
+                headerBox.style.backgroundColor = hexToRgba(data.color, 0.08);
+
+                document.getElementById('resultLeadTier').innerText = data.lead_tier;
+                document.getElementById('resultStrategy').innerText = data.strategy;
+                document.getElementById('resultPromoAction').innerText = data.promotional_action;
+
+                // Simple & Friendly Outreach Script
+                let script = "";
+                if (data.cluster_id === 0) {
+                    script = `"Hi! As one of our most frequent shoppers, we'd love to invite you to an exclusive private preview of our new seasonal fashion collection this Friday, with complimentary drinks and personal styling advice."`;
+                } else if (data.cluster_id === 1) {
+                    script = `"Hello! We noticed you enjoy dining at our premier restaurants. On your next table booking, enjoy a complimentary Chef's dessert or $30 dining credit on orders over $150!"`;
+                } else {
+                    script = `"Planning your weekend? Enjoy our Movie & Hangout Pass: Get 2-for-1 cinema tickets plus a 20% discount on snacks and arcade games this Saturday!"`;
+                }
+                document.getElementById('resultScript').innerText = script;
+            }
+        } catch (err) {
+            console.error('Classification error:', err);
+            alert('Error running customer match. Please check numbers.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-stars me-1"></i> Match Customer & Get Marketing Plan';
+        }
+    });
+
+    function hexToRgba(hex, alpha) {
+        let c;
+        if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+            c= hex.substring(1).split('');
+            if(c.length === 3){
+                c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+            }
+            c= '0x'+c.join('');
+            return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+alpha+')';
+        }
+        return hex;
+    }
+</script>
+{% endblock %}

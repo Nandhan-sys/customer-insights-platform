@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Overview &bull; Simple Customer Insights{% endblock %}
+{% block page_title %}Customer Overview Dashboard{% endblock %}
+{% block page_subtitle %}See how much customers spend, how often they visit, and what deals work best for them{% endblock %}
+
+{% block content %}
+<!-- Top 4 Easy Numbers / Metrics -->
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-sm-6">
+        <div class="metric-card">
+            <div class="metric-icon bg-indigo-soft text-indigo">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="metric-info">
+                <span class="metric-label">Total Customers Studied</span>
+                <h3 class="metric-value">{{ total_customers }}</h3>
+                <span class="metric-trend text-success"><i class="bi bi-check2-circle"></i> Clean real customer records</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="metric-card">
+            <div class="metric-icon bg-teal-soft text-teal">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="metric-info">
+                <span class="metric-label">Average Spend / Month</span>
+                <h3 class="metric-value">${{ "{:,.2f}".format(avg_spend) }}</h3>
+                <span class="metric-trend text-primary"><i class="bi bi-star-fill"></i> Peak: $3,561 (Food lovers)</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="metric-card">
+            <div class="metric-icon bg-amber-soft text-amber">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <div class="metric-info">
+                <span class="metric-label">Visits per Month</span>
+                <h3 class="metric-value">{{ avg_visits }} <small class="fs-6 text-muted">times</small></h3>
+                <span class="metric-trend text-indigo"><i class="bi bi-arrow-repeat"></i> Most frequent: 15 times (Fashion buyers)</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="metric-card">
+            <div class="metric-icon bg-rose-soft text-rose">
+                <i class="bi bi-tag-fill"></i>
+            </div>
+            <div class="metric-info">
+                <span class="metric-label">Uses Discounts & Coupons</span>
+                <h3 class="metric-value">{{ offer_rate }}%</h3>
+                <span class="metric-trend text-danger"><i class="bi bi-percent"></i> Over 70% in Food & Movies</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1: Pie Breakdown & Spending Comparison -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-5">
+        <div class="analytics-card h-100">
+            <div class="card-header-clean">
+                <div>
+                    <h5 class="card-title">Customer Breakdown (Who visits our mall?)</h5>
+                    <p class="card-subtitle text-muted">The 3 distinct customer groups found by our AI analysis</p>
+                </div>
+            </div>
+            <div class="card-body d-flex flex-column align-items-center justify-content-center pt-2">
+                <div style="position: relative; height: 260px; width: 100%;">
+                    <canvas id="marketShareChart"></canvas>
+                </div>
+                <div class="cluster-legend-grid mt-3 w-100">
+                    {% for cid, p in personas.items() %}
+                    <div class="legend-item" style="border-left-color: {{ p.color }};">
+                        <span class="legend-title">{{ p.name }}</span>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="legend-count text-muted">{{ cluster_metrics[cid].count }} people</span>
+                            <span class="legend-pct fw-bold" style="color: {{ p.color }};">{{ cluster_metrics[cid].share }}% of all visitors</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="analytics-card h-100">
+            <div class="card-header-clean">
+                <div>
+                    <h5 class="card-title">Monthly Spend vs. Number of Visits</h5>
+                    <p class="card-subtitle text-muted">Comparing how much money each group spends against how often they visit</p>
+                </div>
+            </div>
+            <div class="card-body pt-2">
+                <div style="position: relative; height: 320px; width: 100%;">
+                    <canvas id="spendVisitChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2: What they buy & Coupon habits -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-7">
+        <div class="analytics-card h-100">
+            <div class="card-header-clean">
+                <div>
+                    <h5 class="card-title">What Each Group Likes to Buy</h5>
+                    <p class="card-subtitle text-muted">Notice the clear difference: Clothes vs. Food vs. Movies/Games</p>
+                </div>
+            </div>
+            <div class="card-body pt-2">
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="analytics-card h-100">
+            <div class="card-header-clean">
+                <div>
+                    <h5 class="card-title">Who Actually Uses Coupons?</h5>
+                    <p class="card-subtitle text-muted">Fashion shoppers buy full-price; Food & Movie fans love deals!</p>
+                </div>
+            </div>
+            <div class="card-body pt-2">
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="offerSensitivityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Easy Comparison Table -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="analytics-card">
+            <div class="card-header-clean d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title">Quick Comparison: The 3 Customer Groups</h5>
+                    <p class="card-subtitle text-muted">A clear summary table showing who they are and the best action to take</p>
+                </div>
+                <a href="{{ url_for('personas') }}" class="btn btn-outline-primary btn-sm">
+                    Read Full Profiles <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Customer Group</th>
+                            <th>Group Size</th>
+                            <th>Avg. Spend / Mo</th>
+                            <th>Visits / Mo</th>
+                            <th>Time Spent</th>
+                            <th>Favorite Purchase</th>
+                            <th>Uses Discounts?</th>
+                            <th>Best Marketing Plan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cid, p in personas.items() %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="segment-indicator" style="background-color: {{ p.color }};"></span>
+                                    <div>
+                                        <div class="fw-bold">{{ p.name }}</div>
+                                        <span class="badge" style="background-color: {{ p.bg_color }}; color: {{ p.color }};">{{ p.badge }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><strong>{{ cluster_metrics[cid].count }} people</strong> <small class="text-muted">({{ cluster_metrics[cid].share }}%)</small></td>
+                            <td><strong class="text-dark">${{ "{:,.2f}".format(cluster_metrics[cid].avg_spend) }}</strong></td>
+                            <td>{{ cluster_metrics[cid].avg_visits }} times</td>
+                            <td>{{ cluster_metrics[cid].avg_dwell }} mins</td>
+                            <td><span class="badge bg-light text-dark border">{{ cluster_metrics[cid].top_category }}</span></td>
+                            <td><span class="badge {% if cid == 0 %}bg-warning-soft text-warning{% else %}bg-success-soft text-success{% endif %}">{{ p.offer_usage }}</span></td>
+                            <td><small class="text-dark fw-semibold">{{ p.promotional_action }}</small></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Tool Callout -->
+<div class="p-4 rounded-4 bg-gradient-brand text-white shadow-sm mb-2 d-flex flex-wrap align-items-center justify-content-between">
+    <div class="mb-3 mb-md-0">
+        <h4 class="fw-bold mb-1"><i class="bi bi-magic me-2"></i> Want to test a new customer or lead?</h4>
+        <p class="mb-0 text-white-50">Use our 1-click Customer Matcher tool! Type in any customer's visits and spend to instantly see their group and the best marketing offer.</p>
+    </div>
+    <a href="{{ url_for('lead_generator') }}" class="btn btn-light text-primary fw-bold px-4 py-2 shadow">
+        Open Customer Matcher Tool <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+</div>
+
+<script>
+    // Embed backend data into frontend JS context safely
+    window.DASHBOARD_DATA = {
+        clusterMetrics: {{ cluster_metrics|tojson }},
+        catDist: {{ cat_dist|tojson }},
+        catByCluster: {{ cat_by_cluster|tojson }},
+        personas: {{ personas|tojson }}
+    };
+</script>
+{% endblock %}

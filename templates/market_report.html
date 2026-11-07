@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Simple Presentation Deck &bull; Customer Insights Summary{% endblock %}
+{% block page_title %}Simple Presentation & Summary Slides{% endblock %}
+{% block page_subtitle %}A clear, 5-slide summary of our findings and business advice for management review{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <span class="badge bg-primary-soft text-primary fw-bold text-uppercase">Presentation View</span>
+        <span class="text-muted small ms-2">Easy to read and ready to present to any manager or recruiter</span>
+    </div>
+    <button class="btn btn-dark btn-sm px-3" onclick="window.print()">
+        <i class="bi bi-printer-fill me-1"></i> Print / Save as PDF
+    </button>
+</div>
+
+<!-- Slide 1: The Problem -->
+<div class="presentation-slide mb-4">
+    <div class="slide-header">
+        <span class="slide-number">Slide 01 / 05</span>
+        <span class="slide-category text-uppercase">The Business Problem</span>
+    </div>
+    <div class="slide-body">
+        <h2 class="slide-title">Why Treating All Customers the Same Wastes Money</h2>
+        <p class="slide-lead text-muted">
+            Most businesses make the mistake of giving the same generic discount coupon to everyone. But customers are completely different: some buy at full price, while others only visit for food or movies.
+        </p>
+
+        <div class="row g-3 mt-2">
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-light border h-100">
+                    <h6 class="fw-bold text-dark"><i class="bi bi-x-circle text-danger me-2"></i>The Common Mistake</h6>
+                    <p class="small text-muted mb-0">Giving coupons to people who would already buy at full price wastes 15% of company profit for no reason.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-light border h-100">
+                    <h6 class="fw-bold text-dark"><i class="bi bi-people text-teal me-2"></i>The Solution</h6>
+                    <p class="small text-muted mb-0">Group customers by their real shopping habits so you know who needs a deal and who prefers VIP perks.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-light border h-100">
+                    <h6 class="fw-bold text-dark"><i class="bi bi-check-circle text-success me-2"></i>Our Goal</h6>
+                    <p class="small text-muted mb-0">Use AI to automatically find customer types and build an easy, codeless website for the marketing team.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 2: The Method -->
+<div class="presentation-slide mb-4">
+    <div class="slide-header">
+        <span class="slide-number">Slide 02 / 05</span>
+        <span class="slide-category text-uppercase">How We Did It</span>
+    </div>
+    <div class="slide-body">
+        <h3 class="slide-title">How the AI Grouped the 120 Shoppers</h3>
+        <p class="slide-lead text-muted">
+            We analyzed 120 customer profiles using clean data and machine learning in 4 simple steps:
+        </p>
+
+        <div class="row g-3 mt-2">
+            <div class="col-md-3">
+                <div class="p-3 rounded bg-light border text-center">
+                    <span class="d-block text-muted small text-uppercase fw-bold">Step 1</span>
+                    <h5 class="fw-bold text-dark my-2">Data Cleaning</h5>
+                    <p class="small text-muted mb-0">Removed duplicates and filled missing numbers with averages.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded bg-light border text-center">
+                    <span class="d-block text-muted small text-uppercase fw-bold">Step 2</span>
+                    <h5 class="fw-bold text-dark my-2">Fair Scaling</h5>
+                    <p class="small text-muted mb-0">Balanced $5,000 spend with 1-19 visits so both matter equally.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded bg-light border text-center">
+                    <span class="d-block text-muted small text-uppercase fw-bold">Step 3</span>
+                    <h5 class="fw-bold text-dark my-2">Smart Grouping</h5>
+                    <p class="small text-muted mb-0">The computer tested different counts and found 3 natural groups.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded bg-light border text-center">
+                    <span class="d-block text-muted small text-uppercase fw-bold">Step 4</span>
+                    <h5 class="fw-bold text-dark my-2">Easy Website</h5>
+                    <p class="small text-muted mb-0">Built this interactive website so anyone can use the results.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 3: The 3 Groups -->
+<div class="presentation-slide mb-4">
+    <div class="slide-header">
+        <span class="slide-number">Slide 03 / 05</span>
+        <span class="slide-category text-uppercase">Key Findings</span>
+    </div>
+    <div class="slide-body">
+        <h3 class="slide-title">The 3 Customer Groups Discovered</h3>
+        <div class="row g-3 mt-3">
+            {% for cid, p in personas.items() %}
+            <div class="col-md-4">
+                <div class="p-3 rounded border h-100" style="background-color: {{ p.bg_color }}; border-color: {{ p.color }} !important;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge" style="background-color: {{ p.color }}; color: white;">Group {{ p.id }}</span>
+                        <strong class="small" style="color: {{ p.color }};">{{ p.badge }}</strong>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">{{ p.name }}</h5>
+                    <p class="small text-muted mb-3">{{ p.tagline }}</p>
+                    <hr class="my-2 opacity-25">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="text-muted">Monthly Spend:</span>
+                        <strong class="text-dark">${{ "{:,.2f}".format(p.avg_spend) }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="text-muted">Visits / Month:</span>
+                        <strong class="text-dark">{{ p.visit_freq }} times</strong>
+                    </div>
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="text-muted">Favorite Purchase:</span>
+                        <strong class="text-dark">{{ p.top_category }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between small">
+                        <span class="text-muted">Uses Discounts:</span>
+                        <strong class="text-dark">{{ p.offer_usage }}</strong>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Slide 4: 3 Smart Decisions -->
+<div class="presentation-slide mb-4">
+    <div class="slide-header">
+        <span class="slide-number">Slide 04 / 05</span>
+        <span class="slide-category text-uppercase">Business Advice for Management</span>
+    </div>
+    <div class="slide-body">
+        <h3 class="slide-title">3 Smart Business Decisions to Make More Money</h3>
+        <div class="row g-3 mt-2">
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-light border h-100">
+                    <div class="badge bg-primary mb-2">Decision 1</div>
+                    <h6 class="fw-bold text-dark">Stop Discounting Fashion Shoppers</h6>
+                    <p class="small text-muted mb-0">Group 0 visits ~15 times a month and rarely uses discounts. Stop giving them coupons—they happily pay full price. Offer VIP styling and early previews instead.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-light border h-100">
+                    <div class="badge bg-teal mb-2">Decision 2</div>
+                    <h6 class="fw-bold text-dark">Dinner Bundles for Big Spenders</h6>
+                    <p class="small text-muted mb-0">Group 1 spends the most ($3,561/mo) and loves good deals. Offer high-spend rewards (like 'Spend $150 on dinner, get a $30 voucher') to encourage bigger checks.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-light border h-100">
+                    <div class="badge bg-amber mb-2">Decision 3</div>
+                    <h6 class="fw-bold text-dark">Monetize Long Hangout Times</h6>
+                    <p class="small text-muted mb-0">Group 2 hangs out for over 2 hours for movies and games. Send them mobile flash deals (e.g. 20% off popcorn or retail) while they wait for their movie to start.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Slide 5: The Codeless Website -->
+<div class="presentation-slide mb-4">
+    <div class="slide-header">
+        <span class="slide-number">Slide 05 / 05</span>
+        <span class="slide-category text-uppercase">Easy to Use for the Whole Team</span>
+    </div>
+    <div class="slide-body">
+        <h3 class="slide-title">Codeless Tool for Marketing & Sales Teams</h3>
+        <p class="slide-lead text-muted">
+            The best part: anyone on your marketing or sales team can use this tool without knowing any programming.
+        </p>
+        <div class="p-4 rounded-3 bg-light border mt-3 text-center">
+            <h5 class="fw-bold text-dark mb-2"><i class="bi bi-laptop text-indigo me-2"></i> Try the Interactive Customer Matcher</h5>
+            <p class="small text-muted mb-3">Just type in a customer's visit and spend numbers, and the website immediately tells you what group they belong to and the exact pitch to use.</p>
+            <a href="{{ url_for('lead_generator') }}" class="btn btn-primary btn-sm px-4">
+                Open Customer Matcher Tool <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

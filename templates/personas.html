@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Groups (3 Types) &bull; Simple Profiles & Marketing Advice{% endblock %}
+{% block page_title %}The 3 Customer Groups{% endblock %}
+{% block page_subtitle %}Detailed profiles of the 3 shopper types found by our data, and simple strategies to win their business{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    {% for cid, p in personas.items() %}
+    <div class="col-lg-4">
+        <div class="persona-card h-100" style="border-top: 4px solid {{ p.color }};">
+            <div class="persona-header">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge" style="background-color: {{ p.bg_color }}; color: {{ p.color }}; font-weight: 700; font-size: 0.82rem;">
+                        {{ p.badge }}
+                    </span>
+                    <span class="cluster-tag">Group {{ p.id }}</span>
+                </div>
+                <h4 class="persona-title">{{ p.name }}</h4>
+                <p class="persona-tagline text-muted small">{{ p.tagline }}</p>
+            </div>
+
+            <!-- 4 Quick Stats -->
+            <div class="persona-stats-grid mb-3">
+                <div class="stat-box">
+                    <span class="stat-box-label">Monthly Spend</span>
+                    <span class="stat-box-val" style="color: {{ p.color }};">${{ "{:,.0f}".format(p.avg_spend) }}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-box-label">Monthly Visits</span>
+                    <span class="stat-box-val">{{ p.visit_freq }} <small>times</small></span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-box-label">Time in Mall</span>
+                    <span class="stat-box-val">{{ p.dwell_time }} <small>mins</small></span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-box-label">Spending Score</span>
+                    <span class="stat-box-val">{{ p.spending_score }} <small>/ 100</small></span>
+                </div>
+            </div>
+
+            <!-- Shopping Habits -->
+            <div class="persona-section">
+                <h6 class="section-heading"><i class="bi bi-person-check-fill me-1" style="color: {{ p.color }};"></i> Shopping Habits</h6>
+                <ul class="traits-list mb-3">
+                    {% for trait in p.characteristics %}
+                    <li><i class="bi bi-check2 text-success me-1"></i> {{ trait }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Priority Level -->
+            <div class="persona-section">
+                <h6 class="section-heading"><i class="bi bi-star-fill me-1" style="color: {{ p.color }};"></i> Priority Level</h6>
+                <div class="p-2 rounded bg-light border mb-3">
+                    <span class="fw-semibold text-dark small"><i class="bi bi-shield-check text-primary me-1"></i> {{ p.lead_tier }}</span>
+                </div>
+            </div>
+
+            <!-- Marketing Strategy -->
+            <div class="persona-section">
+                <h6 class="section-heading"><i class="bi bi-megaphone-fill me-1" style="color: {{ p.color }};"></i> How to Market to Them</h6>
+                <p class="small text-muted mb-3">{{ p.marketing_strategy }}</p>
+            </div>
+
+            <!-- Recommended Offer -->
+            <div class="persona-section mt-auto">
+                <div class="offer-box p-3 rounded" style="background-color: {{ p.bg_color }};">
+                    <span class="d-block fw-bold small text-uppercase" style="color: {{ p.color }}; font-size: 0.75rem;">Best Offer to Give Them</span>
+                    <span class="small fw-semibold text-dark">{{ p.promotional_action }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Simple Cross-Department Action Guide -->
+<div class="row">
+    <div class="col-12">
+        <div class="analytics-card">
+            <div class="card-header-clean">
+                <h5 class="card-title">Simple Action Guide for Your Team</h5>
+                <p class="card-subtitle text-muted">What Marketing, Sales, and Customer Service teams should do for each group</p>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 20%;">Team Function</th>
+                            <th style="width: 26%;">Regular Fashion Shoppers (Group 0)</th>
+                            <th style="width: 27%;">Big Spenders on Dining (Group 1)</th>
+                            <th style="width: 27%;">Movie & Hangout Visitors (Group 2)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold bg-light"><i class="bi bi-bullseye text-primary me-2"></i>Finding New Leads</td>
+                            <td class="small">Target style-conscious people on Instagram. Show off new apparel collections and fresh arrivals.</td>
+                            <td class="small">Target working professionals and local food lovers on Google & LinkedIn. Highlight business lunch and dinner spots.</td>
+                            <td class="small">Target college students and families on social media. Promote upcoming movies, gaming arcades, and weekend events.</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold bg-light"><i class="bi bi-cash-stack text-success me-2"></i>Deals & Discounts</td>
+                            <td class="small"><strong>Do not give discounts!</strong> They happily buy at regular price. Offer free styling advice or early access instead.</td>
+                            <td class="small"><strong>Use spend bundles:</strong> 'Spend $150 on dinner, get a $30 gift card.' This encourages larger family and business orders.</td>
+                            <td class="small"><strong>Use combo vouchers:</strong> 'Buy 1 Movie Ticket, get 20% off popcorn, snacks, or arcade tokens.'</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold bg-light"><i class="bi bi-heart-fill text-danger me-2"></i>Keeping Them Happy</td>
+                            <td class="small">Create an exclusive VIP club with private lounge access and early invitations to seasonal launches.</td>
+                            <td class="small">Offer priority restaurant reservations, special chef tastings, and birthday celebration perks.</td>
+                            <td class="small">Fun mobile app rewards: check-in badges, free movie popcorn points, and gaming discounts.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

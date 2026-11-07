@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}View All 120 Customers &bull; Customer Data Table{% endblock %}
+{% block page_title %}Customer Data Table (120 People){% endblock %}
+{% block page_subtitle %}Search, filter, and inspect the shopping habits of all 120 customers in our study{% endblock %}
+
+{% block content %}
+<div class="analytics-card mb-4">
+    <div class="card-header-clean d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h5 class="card-title">All Customer Records</h5>
+            <p class="card-subtitle text-muted">Filter by customer group, product category, or search by Customer ID</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <select class="form-select form-select-sm" id="clusterFilter" style="width: auto;">
+                <option value="all">All Groups</option>
+                <option value="0">Group 0 (Regular Fashion Shoppers)</option>
+                <option value="1">Group 1 (Big Spenders on Dining)</option>
+                <option value="2">Group 2 (Movie & Hangout Visitors)</option>
+            </select>
+            <select class="form-select form-select-sm" id="categoryFilter" style="width: auto;">
+                <option value="all">All Categories</option>
+                <option value="Fashion">Fashion & Clothes</option>
+                <option value="Food">Food & Dining</option>
+                <option value="Entertainment">Entertainment & Movies</option>
+                <option value="Electronics">Electronics & Tech</option>
+            </select>
+            <input type="text" class="form-control form-control-sm" id="searchId" placeholder="Search Customer ID..." style="width: 170px;">
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="cohortTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Customer Group</th>
+                    <th>Visits / Month</th>
+                    <th>Monthly Spend</th>
+                    <th>Time in Mall</th>
+                    <th>Spending Score</th>
+                    <th>Favorite Category</th>
+                    <th>Uses Coupons?</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr data-cluster="{{ r.Cluster }}" data-category="{{ r.Category_Preference }}" data-id="{{ r.Customer_ID }}">
+                    <td><span class="badge bg-light text-dark border">#{{ r.Customer_ID }}</span></td>
+                    <td>
+                        <span class="badge" style="background-color: {{ personas[r.Cluster].bg_color }}; color: {{ personas[r.Cluster].color }}; font-weight: 600;">
+                            Group {{ r.Cluster }}: {{ personas[r.Cluster].name }}
+                        </span>
+                    </td>
+                    <td><strong>{{ r.Visit_Frequency }}</strong> times</td>
+                    <td><strong class="text-dark">${{ "{:,.2f}".format(r.Avg_Spending) }}</strong></td>
+                    <td>{{ r.Time_Spent_Minutes }} mins</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span>{{ r.Spending_Score }}</span>
+                            <div class="progress flex-grow-1" style="height: 6px; width: 60px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ r.Spending_Score }}%;"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-light text-dark border">{{ r.Category_Preference }}</span></td>
+                    <td>
+                        <span class="badge {% if r.Offers_Used|lower == 'yes' %}bg-success-soft text-success{% else %}bg-secondary-soft text-secondary{% endif %}">
+                            {{ r.Offers_Used }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const clusterFilter = document.getElementById('clusterFilter');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const searchId = document.getElementById('searchId');
+    const rows = document.querySelectorAll('#cohortTable tbody tr');
+
+    function filterTable() {
+        const cVal = clusterFilter.value;
+        const catVal = categoryFilter.value;
+        const searchVal = searchId.value.trim().toLowerCase();
+
+        rows.forEach(r => {
+            const rowCluster = r.dataset.cluster;
+            const rowCategory = r.dataset.category;
+            const rowId = r.dataset.id;
+
+            const matchesCluster = (cVal === 'all' || rowCluster === cVal);
+            const matchesCategory = (catVal === 'all' || rowCategory === catVal);
+            const matchesSearch = (searchVal === '' || rowId.includes(searchVal));
+
+            if (matchesCluster && matchesCategory && matchesSearch) {
+                r.style.display = '';
+            } else {
+                r.style.display = 'none';
+            }
+        });
+    }
+
+    clusterFilter.addEventListener('change', filterTable);
+    categoryFilter.addEventListener('change', filterTable);
+    searchId.addEventListener('input', filterTable);
+</script>
+{% endblock %}
